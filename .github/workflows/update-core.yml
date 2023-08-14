@@ -1,0 +1,41 @@
+name: update-core
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Checkout v-no
+        uses: actions/checkout@v3
+        with:
+          repository: akrisrn/v-no
+
+      - name: Checkout nshcr.github.io
+        uses: actions/checkout@v3
+        with:
+          ref: main
+          path: nshcr.github.io
+
+      - name: Build
+        run: |
+          cp nshcr.github.io/.env.release .env.local
+          yarn && yarn run build-modern+clean
+          rm -rf nshcr.github.io/assets/{css,js}
+          cp -r dist/* nshcr.github.io/
+          cp src/vno.d.ts nshcr.github.io/.scripts/src/
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          git-config-name: gh-actions
+          branch: main
+          folder: nshcr.github.io
