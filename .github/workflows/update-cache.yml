@@ -1,0 +1,49 @@
+name: update-cache
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**.md'
+      - '.scripts/**'
+  workflow_run:
+    workflows:
+      - 'update-core'
+    branches:
+      - main
+    types:
+      - completed
+
+permissions:
+  contents: write
+
+jobs:
+  update-cache:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: main
+
+      - name: Build and update
+        run: |
+          cd .scripts
+          pnpm i && pnpm run build
+          pnpm run update-cache-key
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          git-config-name: gh-actions
+          branch: main
+          folder: .

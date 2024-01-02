@@ -1,0 +1,1 @@
+(()=>{"use strict";vno.callAndListen((function(){if(vno.filePath===vno.conf.paths.index){var n=document.querySelector(".item-date");n&&(n.innerText="".concat(vno.mainSelf.endDate," | ").concat(vno.getMessage("lastUpdated")))}}),vno.EEvent.mainShown,document,!0)})();
